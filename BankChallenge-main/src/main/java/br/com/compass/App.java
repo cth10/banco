@@ -4,13 +4,15 @@ import br.com.compass.view.ContaView;
 
 import java.util.Scanner;
 
+import br.com.compass.view.LoginView;
+
 public class App {
-    
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         mainMenu(scanner);
-        
+
         scanner.close();
         System.out.println("Application closed");
     }
@@ -30,13 +32,18 @@ public class App {
 
             switch (option) {
                 case 1:
-                    bankMenu(scanner);
-                    return;
+                    LoginView loginView = new LoginView();
+                    if (loginView.realizarLogin(scanner)) {
+                        bankMenu(scanner);
+                    }
+                    break;
+
                 case 2:
                     ContaView contaView = new ContaView();
                     contaView.criarConta(scanner);
                     System.out.println("Account Opening.");
                     break;
+
                 case 0:
                     running = false;
                     break;
@@ -93,5 +100,5 @@ public class App {
             }
         }
     }
-    
+
 }
