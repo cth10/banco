@@ -1,7 +1,10 @@
 package br.com.compass.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Conta {
 
@@ -11,10 +14,9 @@ public class Conta {
     private String cpf;
     private String telefone;
     private TipoConta tipoConta;
-
-
     private Login login;
-
+    private Double saldo;
+    private List<Transacao> transacoes;
 
     public Conta(String nome, String cpf, String dataNascimento, int tipoConta, Login login, String telefone) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -24,15 +26,8 @@ public class Conta {
         this.login = login;
         this.telefone = telefone;
         this.tipoConta = TipoConta.getTipoConta(tipoConta);
-
-    }
-
-    public TipoConta getTipoConta() {
-        return tipoConta;
-    }
-
-    public void setTipoConta(TipoConta tipoConta) {
-        this.tipoConta = tipoConta;
+        this.saldo = 0.0;
+        this.transacoes = new ArrayList<>();
     }
 
     public Integer getId() {
@@ -75,11 +70,35 @@ public class Conta {
         this.telefone = telefone;
     }
 
+    public TipoConta getTipoConta() {
+        return tipoConta;
+    }
+
+    public void setTipoConta(TipoConta tipoConta) {
+        this.tipoConta = tipoConta;
+    }
+
     public Login getLogin() {
         return login;
     }
 
     public void setLogin(Login login) {
         this.login = login;
+    }
+
+    public Double getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(Double saldo) {
+        this.saldo = saldo;
+    }
+
+    public List<Transacao> getTransacoes() {
+        return transacoes;
+    }
+
+    public void addTransacao(Transacao transacao) {
+        this.transacoes.add(transacao);
     }
 }

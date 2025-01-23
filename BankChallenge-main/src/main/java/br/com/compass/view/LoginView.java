@@ -6,6 +6,11 @@ import br.com.compass.model.Login;
 import java.util.Scanner;
 
 public class LoginView {
+    private static String lastCpfLogado;
+
+    public static String getLastCpfLogado() {
+        return lastCpfLogado;
+    }
 
     public boolean realizarLogin(Scanner sc) {
         System.out.println("Digite seu CPF: ");
@@ -20,6 +25,7 @@ public class LoginView {
         boolean loginSucesso = loginService.validarLogin(login);
 
         if (loginSucesso) {
+            lastCpfLogado = cpf;
             System.out.println("Login realizado com sucesso!");
             return true;
         } else {
