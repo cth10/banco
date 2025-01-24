@@ -12,14 +12,14 @@ public class ContaView {
 
         // ⚠️ Problema para nomes completos (com espaço)
 
-        System.out.println("Digite o nome: ");
+        System.out.println("Enter your name: ");
         String nome = sc.next();
 
         // Loop para validar o CPF
 
         String cpf;
         while (true) {
-            System.out.println("Digite o CPF (apenas números): ");
+            System.out.println("Enter your CPF (numbers only): ");
             cpf = sc.next();
 
 
@@ -27,13 +27,13 @@ public class ContaView {
                 cpf = ValidationUtils.formatarCPF(cpf);
                 break;
             } else {
-                System.out.println("CPF inválido! Por favor, digite um CPF válido.");
+                System.out.println("Invalid CPF! Please enter a valid CPF.");
             }
         }
 
         // Solicita e lê a data de nascimento
 
-        System.out.println("Digite a sua data de nascimento (dd/MM/yyyy): ");
+        System.out.println("Enter your date of birth (dd/MM/yyyy): ");
         String dataNascimento = sc.next();
 
 
@@ -41,7 +41,7 @@ public class ContaView {
 
         String telefone;
         while (true) {
-            System.out.println("Digite seu telefone (apenas números): ");
+            System.out.println("Enter your phone number (numbers only): ");
             telefone = sc.next();
 
             // Valida o telefone
@@ -50,26 +50,26 @@ public class ContaView {
                 telefone = ValidationUtils.formatarTelefone(telefone);
                 break;
             } else {
-                System.out.println("Telefone inválido! Use o formato: DDD + número (Ex: 11999999999)");
+                System.out.println("Invalid phone number! Use the format: Area code + number (Ex: 11999999999)" );
             }
         }
 
-        System.out.println("Tipo de conta, digite:");
-        System.out.println("1 - Conta Corrente");
-        System.out.println("2 - Conta Salário");
-        System.out.println("3 - Conta Poupança");
+        System.out.println("Account type, enter:");
+        System.out.println("1 - Conta Corrente (Checking Account)");
+        System.out.println("2 - Conta Salário (Salary Account)");
+        System.out.println("3 - Conta Poupança (Savings Account)");
         int tipoConta = sc.nextInt();
 
         // Senha
 
         String senha;
         while (true) {
-            System.out.println("Digite uma senha (mínimo 8 caracteres): ");
+            System.out.println("Enter a password (minimum 8 characters): ");
             senha = sc.next();
             if (ValidationUtils.validarSenha(senha)) {
                 break;
             } else {
-                System.out.println("Senha inválida! A senha deve ter pelo menos 8 caracteres.");
+                System.out.println("Invalid password! Password must be at least 8 characters. ");
             }
         }
 

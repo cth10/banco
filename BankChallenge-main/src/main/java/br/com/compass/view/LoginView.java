@@ -14,14 +14,14 @@ public class LoginView {
     }
 
     public boolean realizarLogin(Scanner sc) {
-        System.out.println("Digite seu CPF: ");
+        System.out.println("Enter your CPF: ");
         String cpf = sc.next();
 
         // Formata o CPF antes de fazer a validação
         cpf = ValidationUtils.formatarCPF(cpf);
-        System.out.println("CPF formatado para login: " + cpf);
+        System.out.println("CPF formatted for login: " + cpf);
 
-        System.out.println("Digite sua senha: ");
+        System.out.println("Enter your password: ");
         String senha = sc.next();
 
         Login login = new Login(cpf, senha);
@@ -31,10 +31,10 @@ public class LoginView {
 
         if (loginSucesso) {
             lastCpfLogado = cpf;
-            System.out.println("Login realizado com sucesso!");
+            System.out.println("Login successful!");
             return true;
         } else {
-            System.out.println("CPF ou senha inválidos!");
+            System.out.println("Invalid CPF or password!");
             return false;
         }
     }

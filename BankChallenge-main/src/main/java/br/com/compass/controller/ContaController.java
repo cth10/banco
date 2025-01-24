@@ -15,7 +15,7 @@ public class ContaController {
 
     public boolean depositar(String cpf, Double valor) {
         if (valor <= 0) {
-            System.out.println("Valor inválido para depósito!");
+            System.out.println("Invalid deposit amount!");
             return false;
         }
 
@@ -64,7 +64,7 @@ public class ContaController {
 
     public boolean sacar(String cpf, Double valor) {
         if (valor <= 0) {
-            System.out.println("Valor inválido para saque!");
+            System.out.println("Invalid amount for withdrawal!");
             return false;
         }
 
@@ -98,7 +98,7 @@ public class ContaController {
                 em.getTransaction().commit(); // Confirma todas as operações
                 return true;
             } else {
-                System.out.println("Saldo insuficiente!");
+                System.out.println("Insufficient balance!");
                 return false;
             }
         } catch (Exception e) {
@@ -123,7 +123,7 @@ public class ContaController {
         // ⚠️ Problema: Falta validação se a contaDestino existe antes de iniciar a transação
 
         if (valor <= 0) {
-            System.out.println("Valor inválido para transferência!");
+            System.out.println("Invalid amount for transfer!");
             return false;
         }
 
@@ -156,7 +156,7 @@ public class ContaController {
                 Transacao transacaoOrigem = new Transacao(
                         "TRANSFERENCIA_ENVIADA",
                         valor,
-                        "Transferência enviada para: " + contaDestino.getNome(),
+                        "Transfer sent to: " + contaDestino.getNome(),
                         cpfOrigem,
                         cpfDestino
                 );
@@ -164,7 +164,7 @@ public class ContaController {
                 Transacao transacaoDestino = new Transacao(
                         "TRANSFERENCIA_RECEBIDA",
                         valor,
-                        "Transferência recebida de: " + contaOrigem.getNome(),
+                        "Transfer received from: " + contaOrigem.getNome(),
                         cpfOrigem,
                         cpfDestino
                 );
@@ -180,7 +180,7 @@ public class ContaController {
                 em.getTransaction().commit(); // Confirma todas as operações
                 return true;
             } else {
-                System.out.println("Saldo insuficiente!");
+                System.out.println("Insufficient balance!");
                 return false;
             }
         } catch (Exception e) {
@@ -195,11 +195,11 @@ public class ContaController {
     public void exibirExtrato(String cpf) {
         Conta conta = contaDao.findByCpf(cpf);
         if (conta != null) {
-            System.out.println("\n====== EXTRATO BANCÁRIO ======");
-            System.out.println("Cliente: " + conta.getNome());
+            System.out.println("\n====== BANK STATEMENT ======");
+            System.out.println("Customer: " + conta.getNome());
             System.out.println("CPF: " + conta.getCpf());
-            System.out.println("Tipo de Conta: " + conta.getTipoConta().getDescricao());
-            System.out.println("\nTransações:");
+            System.out.println("Account Type: " + conta.getTipoConta().getDescricao());
+            System.out.println("\nTransactions:");
 
             for (Transacao t : conta.getTransacoes()) {
                 System.out.printf("%s - %s - R$ %.2f - %s\n",
@@ -210,7 +210,7 @@ public class ContaController {
                 );
             }
 
-            System.out.println("\nSaldo atual: R$ " + String.format("%.2f", conta.getSaldo()));
+            System.out.println("\nCurrent balance: R$ " + String.format("%.2f", conta.getSaldo()));
             System.out.println("=============================\n");
         }
     }

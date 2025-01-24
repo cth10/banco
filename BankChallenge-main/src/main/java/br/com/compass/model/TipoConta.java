@@ -3,9 +3,9 @@ package br.com.compass.model;
 public enum TipoConta {
 
 
-    CONTA_CORRENTE("Conta Corrente"),
-    CONTA_SALARIO("Conta Salario"),
-    CONTA_POUPANCA("Conta Poupanca"),;
+    CONTA_CORRENTE("Conta Corrente (Checking Account)"),
+    CONTA_SALARIO("Conta Salário (Salary Account)"),
+    CONTA_POUPANCA("Conta Poupanca (Savings Account)"),;
 
     private String descricao;
 

@@ -4,18 +4,20 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
 
 @Entity
-
 public class Login {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer loginId;
+
+    @Column(unique = true)  //  Garante que não haverá mais CPFs duplicados
     private String cpf;
+
     private String senha;
 
     public Login() {
-
     }
 
     public String getCpf() {
@@ -38,6 +40,4 @@ public class Login {
         this.cpf = cpf;
         this.senha = senha;
     }
-
-
 }

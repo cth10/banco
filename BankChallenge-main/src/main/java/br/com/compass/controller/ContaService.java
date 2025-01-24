@@ -11,7 +11,7 @@ public class ContaService {
 
         ContaDao dao = new ContaDao();
         dao.save(conta);
-        System.out.println("Conta cadastrada com sucesso!");
+        System.out.println("Account registered successfully!");
 
     }
 
