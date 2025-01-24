@@ -1,6 +1,9 @@
 package br.com.compass.utils;
 
 public class ValidationUtils {
+
+    // Metodo para validar CPF
+
     public static boolean validarCPF(String cpf) {
         // Remove caracteres especiais
         cpf = cpf.replaceAll("[^0-9]", "");

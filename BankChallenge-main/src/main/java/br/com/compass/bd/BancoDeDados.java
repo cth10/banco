@@ -6,6 +6,11 @@ import br.com.compass.model.Login;
 import java.util.HashMap;
 import java.util.Map;
 
+// Map que armazena os dados em memória (feito antes de implementar o db verdadeiro)
+// A chave é uma String (ex: "conta: CPF" ou "login: CPF")
+// O valor pode ser qualquer objeto (Conta ou Login)
+
+
 public class BancoDeDados {
 
 

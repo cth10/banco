@@ -1,10 +1,22 @@
 package br.com.compass.model;
 
-public class Login {
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
+@Entity
+
+public class Login {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer loginId;
     private String cpf;
     private String senha;
+
+    public Login() {
+
+    }
 
     public String getCpf() {
         return cpf;

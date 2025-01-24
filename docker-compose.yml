@@ -1,0 +1,18 @@
+version: '3.9'
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: senha_root   # Senha do usuário root
+      MYSQL_DATABASE: meu_banco        # Banco de dados a ser criado automaticamente
+      MYSQL_USER: usuario              # Usuário adicional
+      MYSQL_PASSWORD: senha_usuario    # Senha do usuário adicional
+    ports:
+      - "3306:3306"                    # Porta do MySQL (host:container)
+    volumes:
+      - mysql_data:/var/lib/mysql      # Persistência de dados
+    restart: always                    # Reinicia automaticamente o contêiner
+
+volumes:
+  mysql_data:

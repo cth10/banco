@@ -9,13 +9,20 @@ import java.util.Scanner;
 
 public class ContaView {
     public void criarConta(Scanner sc) {
+
+        // ⚠️ Problema para nomes completos (com espaço)
+
         System.out.println("Digite o nome: ");
         String nome = sc.next();
+
+        // Loop para validar o CPF
 
         String cpf;
         while (true) {
             System.out.println("Digite o CPF (apenas números): ");
             cpf = sc.next();
+
+
             if (ValidationUtils.validarCPF(cpf)) {
                 cpf = ValidationUtils.formatarCPF(cpf);
                 break;
@@ -24,13 +31,21 @@ public class ContaView {
             }
         }
 
+        // Solicita e lê a data de nascimento
+
         System.out.println("Digite a sua data de nascimento (dd/MM/yyyy): ");
         String dataNascimento = sc.next();
+
+
+        // Loop para validar o telefone
 
         String telefone;
         while (true) {
             System.out.println("Digite seu telefone (apenas números): ");
             telefone = sc.next();
+
+            // Valida o telefone
+
             if (ValidationUtils.validarTelefone(telefone)) {
                 telefone = ValidationUtils.formatarTelefone(telefone);
                 break;
@@ -44,6 +59,8 @@ public class ContaView {
         System.out.println("2 - Conta Salário");
         System.out.println("3 - Conta Poupança");
         int tipoConta = sc.nextInt();
+
+        // Senha
 
         String senha;
         while (true) {

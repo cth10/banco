@@ -2,6 +2,7 @@ package br.com.compass.view;
 
 import br.com.compass.controller.LoginService;
 import br.com.compass.model.Login;
+import br.com.compass.utils.ValidationUtils;
 
 import java.util.Scanner;
 
@@ -15,6 +16,10 @@ public class LoginView {
     public boolean realizarLogin(Scanner sc) {
         System.out.println("Digite seu CPF: ");
         String cpf = sc.next();
+
+        // Formata o CPF antes de fazer a validação
+        cpf = ValidationUtils.formatarCPF(cpf);
+        System.out.println("CPF formatado para login: " + cpf);
 
         System.out.println("Digite sua senha: ");
         String senha = sc.next();
