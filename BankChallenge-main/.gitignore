@@ -28,6 +28,6 @@ replay_pid*
 
 # Target folder
 /target
-
+target/
 .idea/
 *.iml

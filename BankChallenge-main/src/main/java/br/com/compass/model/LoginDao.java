@@ -2,17 +2,27 @@ package br.com.compass.model;
 
 import br.com.compass.bd.Conexao;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
 
 public class LoginDao {
     public void save(Login login) {
         EntityManager em = Conexao.getConnection();
-        em.getTransaction().begin();
-        em.persist(login);
-        em.getTransaction().commit();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            em.persist(login);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+            throw e;
+        }
     }
 
-    // Novo metodo para buscar login por CPF
+    // Metodo para buscar login por CPF
     public Login findByCpf(String cpf) {
         EntityManager em = Conexao.getConnection();
         try {

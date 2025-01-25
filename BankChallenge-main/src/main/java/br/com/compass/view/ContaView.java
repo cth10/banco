@@ -10,10 +10,9 @@ import java.util.Scanner;
 public class ContaView {
     public void criarConta(Scanner sc) {
 
-        // ⚠️ Problema para nomes completos (com espaço)
-
         System.out.println("Enter your name: ");
-        String nome = sc.next();
+        sc.nextLine();
+        String nome = sc.nextLine();
 
         // Loop para validar o CPF
 

@@ -3,7 +3,9 @@ package br.com.compass.controller;
 import br.com.compass.model.Conta;
 import br.com.compass.model.ContaDao;
 import br.com.compass.model.Transacao;
+import br.com.compass.utils.ValidationUtils;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import br.com.compass.bd.Conexao;
 
 public class ContaController {
@@ -14,27 +16,26 @@ public class ContaController {
     }
 
     public boolean depositar(String cpf, Double valor) {
+        // Validação 1: Verifica se o valor do depósito é positivo
+        // Se tentar depositar valor negativo ou zero, retorna false e exibe mensagem
         if (valor <= 0) {
             System.out.println("Invalid deposit amount!");
             return false;
         }
 
         EntityManager em = Conexao.getConnection();
-
-
-        // Ciclo de vida da transação -> DEPÓSITO <-:
-        // 1. begin() - Inicia a transação
-        // 2. commit() - Confirma se tudo deu certo
-        // 3. rollback() - Desfaz se deu erro
-
+        EntityTransaction tx = em.getTransaction();
 
         try {
-            em.getTransaction().begin();
+            tx.begin();
 
+            // Validação 2: Verifica se a conta existe
+            // Se o CPF não existir no banco, retorna false
             Conta conta = contaDao.findByCpf(cpf);
             if (conta != null) {
                 conta.setSaldo(conta.getSaldo() + valor);
 
+                // Cria registro da transação para o histórico
                 Transacao transacao = new Transacao(
                         "DEPOSITO",
                         valor,
@@ -43,19 +44,18 @@ public class ContaController {
                         cpf
                 );
 
-                // Persistir a transação antes de adicionar à conta
                 em.persist(transacao);
                 conta.addTransacao(transacao);
 
                 em.merge(conta);
-                em.getTransaction().commit(); // Confirma todas as operações
-
+                tx.commit();
                 return true;
             }
             return false;
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback(); // Desfaz tudo se deu erro
+            // Em caso de erro na transação, faz rollback para garantir consistência
+            if (tx.isActive()) {
+                tx.rollback();
             }
             e.printStackTrace();
             return false;
@@ -63,26 +63,26 @@ public class ContaController {
     }
 
     public boolean sacar(String cpf, Double valor) {
+        // Validação 1: Verifica se o valor do saque é positivo
+        // Se tentar sacar valor negativo ou zero, retorna false e exibe mensagem
         if (valor <= 0) {
             System.out.println("Invalid amount for withdrawal!");
             return false;
         }
 
         EntityManager em = Conexao.getConnection();
-
-
-        // Ciclo de vida da transação -> SAQUE <-:
-        // 1. begin() - Inicia a transação
-        // 2. commit() - Confirma se tudo deu certo
-        // 3. rollback() - Desfaz se deu erro
+        EntityTransaction tx = em.getTransaction();
 
         try {
-            em.getTransaction().begin();
+            tx.begin();
 
+            // Validação 2: Verifica se a conta existe e tem saldo suficiente
+            // Se o CPF não existir ou saldo for insuficiente, retorna false
             Conta conta = contaDao.findByCpf(cpf);
             if (conta != null && conta.getSaldo() >= valor) {
                 conta.setSaldo(conta.getSaldo() - valor);
 
+                // Cria registro da transação para o histórico
                 Transacao transacao = new Transacao(
                         "SAQUE",
                         valor,
@@ -95,15 +95,16 @@ public class ContaController {
                 conta.addTransacao(transacao);
 
                 em.merge(conta);
-                em.getTransaction().commit(); // Confirma todas as operações
+                tx.commit();
                 return true;
             } else {
                 System.out.println("Insufficient balance!");
                 return false;
             }
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback(); // Desfaz tudo se deu erro
+            // Em caso de erro na transação, faz rollback para garantir consistência
+            if (tx.isActive()) {
+                tx.rollback();
             }
             e.printStackTrace();
             return false;
@@ -111,6 +112,8 @@ public class ContaController {
     }
 
     public Double consultarSaldo(String cpf) {
+        // Validação: Verifica se a conta existe
+        // Se o CPF não existir, retorna null
         Conta conta = contaDao.findByCpf(cpf);
         if (conta != null) {
             return conta.getSaldo();
@@ -119,73 +122,80 @@ public class ContaController {
     }
 
     public boolean transferir(String cpfOrigem, String cpfDestino, Double valor) {
-
-        // ⚠️ Problema: Falta validação se a contaDestino existe antes de iniciar a transação
-
+        // Validação 1: Verifica se o valor da transferência é positivo
+        // Se tentar transferir valor negativo ou zero, retorna false e exibe mensagem
         if (valor <= 0) {
             System.out.println("Invalid amount for transfer!");
             return false;
         }
 
+        // Validação 2: Formata os CPFs antes da busca para garantir padrão
+        String cpfOrigemFormatado = ValidationUtils.formatarCPF(cpfOrigem);
+        String cpfDestinoFormatado = ValidationUtils.formatarCPF(cpfDestino);
+
+        // Validação 3: Verifica se ambas as contas existem
+        Conta contaOrigem = contaDao.findByCpf(cpfOrigemFormatado);
+        Conta contaDestino = contaDao.findByCpf(cpfDestinoFormatado);
+
+        if (contaOrigem == null || contaDestino == null) {
+            System.out.println("One or both accounts not found!");
+            System.out.println("Origin CPF (formatted): " + cpfOrigemFormatado);
+            System.out.println("Destination CPF (formatted): " + cpfDestinoFormatado);
+            return false;
+        }
+
+        // Validação 4: Verifica se há saldo suficiente na conta de origem
+        if (contaOrigem.getSaldo() < valor) {
+            System.out.println("Insufficient balance!");
+            return false;
+        }
+
         EntityManager em = Conexao.getConnection();
-
-
-
-        // Ciclo de vida da transação -> TRANSFERENCIA <-:
-        // 1. begin() - Inicia a transação
-        // 2. commit() - Confirma todas as operações se der certo
-        // 3. rollback() - Desfaz todas as operações se der erro
-        //
-        // Importante na transferência:
-        // - Se der erro em qualquer parte, nada é salvo
-        // - Ou transfere td o valor ou não transfere nada
-        // - Garante que não vai tirar de uma conta sem colocar na outra
-
-
+        EntityTransaction tx = em.getTransaction();
 
         try {
-            em.getTransaction().begin();
+            tx.begin();
 
-            Conta contaOrigem = contaDao.findByCpf(cpfOrigem);
-            Conta contaDestino = contaDao.findByCpf(cpfDestino);
+            // Atualiza os saldos das contas
+            contaOrigem.setSaldo(contaOrigem.getSaldo() - valor);
+            contaDestino.setSaldo(contaDestino.getSaldo() + valor);
 
-            if (contaOrigem != null && contaDestino != null && contaOrigem.getSaldo() >= valor) {
-                contaOrigem.setSaldo(contaOrigem.getSaldo() - valor);
-                contaDestino.setSaldo(contaDestino.getSaldo() + valor);
+            // Cria registros das transações para ambas as contas
+            Transacao transacaoOrigem = new Transacao(
+                    "TRANSFERENCIA_ENVIADA",
+                    valor,
+                    "Transfer sent to: " + contaDestino.getNome(),
+                    cpfOrigemFormatado,
+                    cpfDestinoFormatado
+            );
 
-                Transacao transacaoOrigem = new Transacao(
-                        "TRANSFERENCIA_ENVIADA",
-                        valor,
-                        "Transfer sent to: " + contaDestino.getNome(),
-                        cpfOrigem,
-                        cpfDestino
-                );
+            Transacao transacaoDestino = new Transacao(
+                    "TRANSFERENCIA_RECEBIDA",
+                    valor,
+                    "Transfer received from: " + contaOrigem.getNome(),
+                    cpfOrigemFormatado,
+                    cpfDestinoFormatado
+            );
 
-                Transacao transacaoDestino = new Transacao(
-                        "TRANSFERENCIA_RECEBIDA",
-                        valor,
-                        "Transfer received from: " + contaOrigem.getNome(),
-                        cpfOrigem,
-                        cpfDestino
-                );
+            // Persiste as transações no banco
+            em.persist(transacaoOrigem);
+            em.persist(transacaoDestino);
 
-                em.persist(transacaoOrigem);
-                em.persist(transacaoDestino);
+            // Adiciona as transações ao histórico das contas
+            contaOrigem.addTransacao(transacaoOrigem);
+            contaDestino.addTransacao(transacaoDestino);
 
-                contaOrigem.addTransacao(transacaoOrigem);
-                contaDestino.addTransacao(transacaoDestino);
+            // Atualiza as contas no banco
+            em.merge(contaOrigem);
+            em.merge(contaDestino);
 
-                em.merge(contaOrigem);
-                em.merge(contaDestino);
-                em.getTransaction().commit(); // Confirma todas as operações
-                return true;
-            } else {
-                System.out.println("Insufficient balance!");
-                return false;
-            }
+            tx.commit();
+            return true;
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback(); // Desfaz todas as operações
+            // Em caso de erro na transação, faz rollback para garantir consistência
+            // Isso garante que ou a transferência ocorre por completo ou nada é alterado
+            if (tx.isActive()) {
+                tx.rollback();
             }
             e.printStackTrace();
             return false;
@@ -193,6 +203,8 @@ public class ContaController {
     }
 
     public void exibirExtrato(String cpf) {
+        // Validação: Verifica se a conta existe
+        // Se o CPF não existir, nada é exibido
         Conta conta = contaDao.findByCpf(cpf);
         if (conta != null) {
             System.out.println("\n====== BANK STATEMENT ======");
@@ -201,6 +213,7 @@ public class ContaController {
             System.out.println("Account Type: " + conta.getTipoConta().getDescricao());
             System.out.println("\nTransactions:");
 
+            // Exibe todas as transações da conta
             for (Transacao t : conta.getTransacoes()) {
                 System.out.printf("%s - %s - R$ %.2f - %s\n",
                         t.getData().toString(),
